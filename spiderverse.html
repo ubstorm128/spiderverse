@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Web Archive — a Spider-Man fan page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#0a0e1a;
+    --panel:#12172a;
+    --panel-2:#171d33;
+    --line:#2a3252;
+    --web-blue:#3b6dff;
+    --spider-red:#e62429;
+    --spider-red-dim:#7a1417;
+    --paper:#f2ede3;
+    --ink:#0d0f16;
+    --muted:#8b93b8;
+    --display:'Bangers', cursive;
+    --body:'Barlow Condensed', sans-serif;
+    --radius:10px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 15% -10%, rgba(230,36,41,0.10), transparent 45%),
+      radial-gradient(ellipse at 85% 0%, rgba(59,109,255,0.12), transparent 42%),
+      var(--night);
+    color:var(--paper);
+    font-family:var(--body);
+    font-size:18px;
+    line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--spider-red); color:#fff; }
+  a{ color:inherit; }
+  :focus-visible{ outline:2px solid var(--spider-red); outline-offset:3px; border-radius:4px; }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+
+  /* halftone texture strip used behind headers */
+  .halftone{
+    background-image: radial-gradient(rgba(230,36,41,0.55) 1.1px, transparent 1.1px);
+    background-size: 7px 7px;
+  }
+
+  /* ---------- header ---------- */
+  header.top{
+    padding:20px 0;
+    border-bottom:2px solid var(--line);
+    position:sticky; top:0; z-index:40;
+    background:rgba(10,14,26,0.9);
+    backdrop-filter:blur(6px);
+  }
+  .top-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .logo{
+    font-family:var(--display);
+    font-size:26px;
+    letter-spacing:0.03em;
+    color:var(--paper);
+    display:flex; align-items:center; gap:10px;
+  }
+  .logo .thwip-dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--spider-red);
+    box-shadow:0 0 10px 3px rgba(230,36,41,0.7);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:0.45; transform:scale(0.8);} }
+  nav.crumbs{
+    font-size:14px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted);
+    display:flex; gap:18px;
+  }
+  nav.crumbs a:hover{ color:var(--spider-red); }
+
+  /* ---------- hero with web canvas ---------- */
+  .hero{ position:relative; overflow:hidden; border-bottom:2px solid var(--line); }
+  #webCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  #heroVideo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.15; }
+  .hero-inner{ position:relative; z-index:2; padding:90px 0 70px; }
+  .caption-box{
+    display:inline-block;
+    background:#ffd23f;
+    color:var(--ink);
+    font-family:var(--display);
+    font-size:14px;
+    letter-spacing:0.05em;
+    padding:6px 14px;
+    transform:rotate(-2deg);
+    border:2px solid var(--ink);
+    margin-bottom:22px;
+  }
+  .hero h1{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(46px, 9vw, 96px);
+    line-height:0.92;
+    margin:0 0 18px;
+    letter-spacing:0.01em;
+    color:var(--paper);
+    text-shadow: 3px 3px 0 var(--spider-red-dim);
+  }
+  .hero h1 .accent{ color:var(--spider-red); text-shadow:3px 3px 0 rgba(0,0,0,0.6); }
+  .hero p.lede{ max-width:52ch; color:var(--muted); font-size:19px; margin:0 0 30px; }
+  .hero-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+
+  .btn{
+    font-family:var(--display);
+    font-size:15px;
+    letter-spacing:0.04em;
+    padding:12px 22px;
+    border-radius:999px;
+    cursor:pointer;
+    border:2px solid var(--ink);
+    display:inline-flex; align-items:center; gap:8px;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{ transform:translateY(1px); }
+  .btn.primary{ background:var(--spider-red); color:#fff; box-shadow:3px 3px 0 var(--ink); }
+  .btn.primary:hover{ box-shadow:5px 5px 0 var(--ink); transform:translate(-1px,-1px); }
+  .btn.secondary{ background:var(--web-blue); color:#fff; box-shadow:3px 3px 0 var(--ink); }
+  .btn.secondary:hover{ box-shadow:5px 5px 0 var(--ink); transform:translate(-1px,-1px); }
+
+  /* ---------- section shell ---------- */
+  section.block{ padding:64px 0; border-bottom:2px solid var(--line); }
+  .eyebrow{
+    font-family:var(--display);
+    font-size:13px;
+    letter-spacing:0.1em;
+    color:var(--ink);
+    background:var(--paper);
+    display:inline-block;
+    padding:5px 12px;
+    transform:rotate(-1.5deg);
+    border:2px solid var(--ink);
+    margin-bottom:14px;
+  }
+  .block h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(30px, 4.5vw, 44px);
+    margin:0 0 8px;
+  }
+  .block p.sub{ color:var(--muted); max-width:60ch; margin:0 0 30px; }
+
+  .panel{
+    background:linear-gradient(180deg, var(--panel-2), var(--panel));
+    border:2px solid var(--line);
+    border-radius:var(--radius);
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* ---------- edit-me notice ---------- */
+  .editme{
+    font-family:'Barlow Condensed', sans-serif;
+    font-size:13px;
+    color:#ffd23f;
+    background:rgba(255,210,63,0.08);
+    border:1px dashed rgba(255,210,63,0.5);
+    border-radius:6px;
+    padding:8px 12px;
+    margin-bottom:16px;
+    line-height:1.5;
+  }
+  .editme code{ color:#ffe98a; }
+
+  /* ---------- MIXTAPE / audio module ---------- */
+  .mixtape{ padding:26px; }
+  .mixtape-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+  .track-title{ font-family:var(--display); font-size:22px; letter-spacing:0.02em; }
+  .track-sub{ color:var(--muted); font-size:14px; }
+  #visualizer{ width:100%; height:130px; display:block; background:#070a14; border-radius:6px; border:1px solid var(--line); }
+  .audio-controls{ display:flex; align-items:center; gap:14px; margin-top:16px; flex-wrap:wrap; }
+  .disc-btn{
+    width:52px; height:52px; border-radius:50%;
+    background:var(--ink); border:2px solid var(--spider-red);
+    color:var(--paper); font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex:none;
+  }
+  .track-scrub{ flex:1; min-width:140px; height:4px; background:var(--line); border-radius:2px; position:relative; cursor:pointer; }
+  .track-fill{ position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--spider-red); border-radius:2px; }
+  .track-time{ font-size:14px; color:var(--muted); min-width:90px; text-align:right; }
+  .audio-status{ font-size:13px; color:var(--muted); margin-top:10px; }
+
+  /* ---------- TRAILER / video module ---------- */
+  .video-frame{ position:relative; background:#000; border-radius:6px; overflow:hidden; aspect-ratio:16/9; border:1px solid var(--line); }
+  .video-frame video{ width:100%; height:100%; display:block; object-fit:cover; }
+  .video-fallback{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px; background:repeating-linear-gradient(135deg, #0d1226, #0d1226 10px, #111830 10px, #111830 20px);
+    text-align:center; padding:20px;
+  }
+  .video-fallback .glyph{ font-size:40px; }
+  .video-fallback p{ color:var(--muted); font-size:14px; max-width:34ch; margin:0; }
+  .video-controls{ display:flex; align-items:center; gap:12px; margin-top:14px; }
+
+  /* ---------- PHOTO WALL ---------- */
+  .photo-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px; }
+  .photo{
+    position:relative; border-radius:6px; overflow:hidden; aspect-ratio:1/1;
+    border:2px solid var(--line); cursor:pointer; background:var(--panel-2);
+  }
+  .photo img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .45s cubic-bezier(.2,.8,.2,1); }
+  .photo:hover img{ transform:scale(1.1); }
+  .photo .cap{
+    position:absolute; left:0; right:0; bottom:0; padding:7px 8px;
+    font-size:13px; letter-spacing:0.03em; color:#fff;
+    background:linear-gradient(180deg, transparent, rgba(0,0,0,0.85));
+    transform:translateY(6px); opacity:0; transition:opacity .2s ease, transform .2s ease;
+  }
+  .photo:hover .cap{ opacity:1; transform:translateY(0); }
+  .photo.missing{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .photo.missing .glyph{ font-size:26px; opacity:0.6; }
+  .photo.missing span.name{ font-size:12px; color:var(--muted); text-align:center; padding:0 10px; }
+
+  .lightbox{
+    position:fixed; inset:0; background:rgba(5,7,14,0.94);
+    display:flex; align-items:center; justify-content:center; z-index:60;
+    opacity:0; pointer-events:none; transition:opacity .2s ease; padding:24px;
+  }
+  .lightbox.open{ opacity:1; pointer-events:auto; }
+  .lightbox img{ max-width:min(820px,90vw); max-height:80vh; border-radius:8px; border:2px solid var(--spider-red); }
+  .lightbox-close{
+    position:absolute; top:22px; right:24px; font-family:var(--display);
+    background:var(--spider-red); border:2px solid var(--ink); color:#fff;
+    width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:16px;
+  }
+
+  /* ---------- SPIDER-SENSE cards ---------- */
+  .sense-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; }
+  .sense-card{
+    padding:22px; border-radius:10px; border:2px solid var(--line);
+    background:var(--panel); position:relative; overflow:hidden;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .sense-card:hover{ border-color:var(--spider-red); transform:translateY(-3px); }
+  .sense-card::before{
+    content:''; position:absolute; inset:0; opacity:0;
+    background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(230,36,41,0.25), transparent 60%);
+    transition:opacity .2s ease;
+  }
+  .sense-card:hover::before{ opacity:1; }
+  .sense-card h3{ font-family:var(--display); font-weight:400; font-size:20px; margin:0 0 8px; position:relative; }
+  .sense-card p{ color:var(--muted); font-size:14px; margin:0; position:relative; }
+
+  /* ---------- WEB SHOOTER interactive canvas ---------- */
+  .shooter-panel{ padding:0; }
+  #shooterCanvas{ display:block; width:100%; height:340px; background:#070a14; cursor:crosshair; }
+  .shooter-hint{ font-size:14px; color:var(--muted); padding:14px 20px; border-top:1px solid var(--line); }
+
+  footer{
+    padding:30px 0 50px; font-size:13px; color:var(--muted);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-row">
+    <div class="logo"><span class="thwip-dot"></span> THE WEB ARCHIVE</div>
+    <nav class="crumbs">
+      <a href="#score">Score</a>
+      <a href="#reel">Reel</a>
+      <a href="#wall">Wall</a>
+      <a href="#shooter">Shooter</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <canvas id="webCanvas"></canvas>
+  <video id="heroVideo" autoplay muted loop playsinline></video>
+  <div class="wrap hero-inner">
+    <span class="caption-box">A FAN-MADE TRIBUTE PAGE</span>
+    <h1>Friendly<br>Neighborhood<br><span class="accent">Web Archive.</span></h1>
+    <p class="lede">A little shrine to the wall-crawler — your score, your favorite trailer, your stills, all wired into one page with a bit of web-slinging interactivity.</p>
+    <div class="hero-actions">
+      <button class="btn primary" id="heroThwip">🕸️ THWIP</button>
+      <a class="btn secondary" href="#score">Play the score</a>
+    </div>
+  </div>
+</section>
+
+<main>
+
+  <!-- ===== SCORE / AUDIO MODULE ===== -->
+  <section class="block" id="score">
+    <div class="wrap">
+      <span class="eyebrow halftone">SECTION 01</span>
+      <h2>The Score</h2>
+
+      <div class="panel mixtape">
+        <div class="mixtape-head">
+          <div>
+            <div class="track-title" id="songTitle">Track title goes here</div>
+            <div class="track-sub" id="songSub">Add your song — subtitle goes here</div>
+          </div>
+        </div>
+        <canvas id="visualizer"></canvas>
+        <div class="audio-controls">
+          <button class="disc-btn" id="audioPlayBtn" aria-label="Play or pause the score">▶</button>
+          <div class="track-scrub" id="audioScrub"><div class="track-fill" id="audioFill"></div></div>
+          <span class="track-time" id="audioTime">0:00 / 0:00</span>
+        </div>
+        <audio id="scoreAudio" preload="none" loop></audio>
+        <div class="audio-status" id="audioStatus">No track loaded yet — the visualizer is idling.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== REEL / VIDEO MODULE ===== -->
+  <section class="block" id="reel">
+    <div class="wrap">
+      <span class="eyebrow halftone">SECTION 02</span>
+      <h2>The Reel</h2>
+      <p class="sub">A clip, a trailer, a favorite scene — your call.</p>
+
+      <div class="panel" style="padding:22px;">
+        <div class="video-frame">
+          <video id="reelVideo" playsinline></video>
+          <div class="video-fallback" id="videoFallback">
+            <div class="glyph">🎬</div>
+            <p>No video loaded yet. Set <code>VIDEO_SRC</code> in the script to see your clip here.</p>
+          </div>
+        </div>
+        <div class="video-controls">
+          <button class="disc-btn" id="videoPlayBtn" aria-label="Play or pause the reel">▶</button>
+          <div class="track-scrub" id="videoScrub"><div class="track-fill" id="videoFill"></div></div>
+          <span class="track-time" id="videoTime">0:00 / 0:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PHOTO WALL ===== -->
+  <section class="block" id="wall">
+    <div class="wrap">
+      <span class="eyebrow halftone">SECTION 03</span>
+      <h2>The Wall</h2>
+      <p class="sub">Stills, posters, screenshots — click any tile to view it full-size.</p>
+
+      <div class="photo-grid" id="photoGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== SPIDER-SENSE cards ===== -->
+  <section class="block">
+    <div class="wrap">
+      <span class="eyebrow halftone">SECTION 04</span>
+      <h2>Spider-Sense</h2>
+      <p class="sub">Hover a card — the glow follows your cursor, like a tingle.</p>
+      <div class="sense-grid" id="senseGrid">
+        <div class="sense-card"><h3>Suit</h3><p>Web-shooters, wrist snap, the little lenses that narrow when he's focused.</p></div>
+        <div class="sense-card"><h3>City</h3><p>Rooftops, fire escapes, the skyline you swing across between panels.</p></div>
+        <div class="sense-card"><h3>Voice</h3><p>The wisecrack under pressure — nerves turned into one-liners.</p></div>
+        <div class="sense-card"><h3>Score</h3><p>The theme that kicks in right as he lets go of the ledge.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WEB SHOOTER interactive canvas ===== -->
+  <section class="block" id="shooter" style="border-bottom:none;">
+    <div class="wrap">
+      <span class="eyebrow halftone">SECTION 05</span>
+      <h2>Web Shooter</h2>
+      <p class="sub">Click and drag anywhere on the canvas to fire a web line.</p>
+      <div class="panel shooter-panel">
+        <canvas id="shooterCanvas"></canvas>
+        <div class="shooter-hint">click + drag to shoot · release to let go</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <span>The Web Archive — an unofficial fan tribute. Built with HTML, CSS, and vanilla JS.</span>
+  <span>No frameworks, no build step.</span>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <img id="lightboxImg" src="" alt="Expanded photo">
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const SONG_SRC   = "audio/WhatsApp Audio 2026-08-17 at 12.46.00 PM.mpeg";
+  const SONG_TITLE = "Spider-Man Theme";
+  const SONG_SUB   = "Theme Track";
+
+  const VIDEO_SRC    = "video/SPIDER-MAN_ NO WAY HOME - Official Teaser Trailer (HD)(1080P_HD).mp4";
+  const VIDEO_POSTER = "images/Spider-Man.jpg";
+
+  const PHOTOS = [
+    { src: "images/19069998415773409.jpg", caption: "Photo 01" },
+    { src: "images/43417583906027442.jpg", caption: "Photo 02" },
+    { src: "images/download (1).jpg", caption: "Photo 03" },
+    { src: "images/download (2).jpg", caption: "Photo 04" },
+    { src: "images/download.jpg", caption: "Photo 05" },
+    { src: "images/Spider-Man.jpg", caption: "Photo 06" }
+  ];
+  /* ========================================================= */
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- HERO VIDEO ---------- */
+  const heroVideo = document.getElementById('heroVideo');
+  heroVideo.src = VIDEO_SRC;
+
+  /* ---------- HERO WEB CANVAS ---------- */
+  const webCanvas = document.getElementById('webCanvas');
+  const webCtx = webCanvas.getContext('2d');
+  let webW, webH, nodes = [];
+  let mouseHero = { x: -9999, y: -9999 };
+
+  function sizeHero(){
+    const hero = document.querySelector('.hero');
+    const rect = hero.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    webW = rect.width; webH = rect.height;
+    webCanvas.width = webW * dpr; webCanvas.height = webH * dpr;
+    webCtx.setTransform(dpr,0,0,dpr,0,0);
+    buildNodes();
+  }
+  function buildNodes(){
+    const cols = 9, rows = 6;
+    nodes = [];
+    for(let r=0;r<=rows;r++){
+      for(let c=0;c<=cols;c++){
+        nodes.push({
+          x: (c/cols) * webW + (Math.random()-0.5)*20,
+          y: (r/rows) * webH + (Math.random()-0.5)*20,
+          baseX: (c/cols) * webW,
+          baseY: (r/rows) * webH
+        });
+      }
+    }
+  }
+  window.addEventListener('resize', sizeHero);
+  document.querySelector('.hero').addEventListener('mousemove', (e) => {
+    const rect = webCanvas.getBoundingClientRect();
+    mouseHero.x = e.clientX - rect.left;
+    mouseHero.y = e.clientY - rect.top;
+  });
+  document.querySelector('.hero').addEventListener('mouseleave', () => { mouseHero.x=-9999; mouseHero.y=-9999; });
+
+  function drawHeroWeb(){
+    requestAnimationFrame(drawHeroWeb);
+    webCtx.clearRect(0,0,webW,webH);
+    webCtx.strokeStyle = 'rgba(230,36,41,0.18)';
+    webCtx.lineWidth = 1;
+
+    for(const n of nodes){
+      if(!reduced){
+        const dx = mouseHero.x - n.baseX, dy = mouseHero.y - n.baseY;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        const pull = Math.max(0, 1 - dist/260);
+        n.x += ((n.baseX + dx*pull*0.3) - n.x) * 0.08;
+        n.y += ((n.baseY + dy*pull*0.3) - n.y) * 0.08;
+      } else {
+        n.x = n.baseX; n.y = n.baseY;
+      }
+    }
+    const cols = 10;
+    for(let i=0;i<nodes.length;i++){
+      const n = nodes[i];
+      if((i+1) % cols !== 0 && nodes[i+1]) line(n, nodes[i+1]);
+      if(nodes[i+cols]) line(n, nodes[i+cols]);
+    }
+    function line(a,b){
+      webCtx.beginPath();
+      webCtx.moveTo(a.x,a.y);
+      webCtx.lineTo(b.x,b.y);
+      webCtx.stroke();
+    }
+  }
+  sizeHero();
+  drawHeroWeb();
+
+  document.getElementById('heroThwip').addEventListener('click', () => {
+    buildNodes();
+  });
+
+  /* ---------- SCORE / AUDIO ---------- */
+  document.getElementById('songTitle').textContent = SONG_TITLE;
+  document.getElementById('songSub').textContent = SONG_SUB;
+
+  const scoreAudio = document.getElementById('scoreAudio');
+  const audioPlayBtn = document.getElementById('audioPlayBtn');
+  const audioScrub = document.getElementById('audioScrub');
+  const audioFill = document.getElementById('audioFill');
+  const audioTime = document.getElementById('audioTime');
+  const audioStatus = document.getElementById('audioStatus');
+  const vizCanvas = document.getElementById('visualizer');
+  const vizCtx = vizCanvas.getContext('2d');
+
+  let audioCtx=null, analyser=null, dataArray=null, sourceNode=null;
+  let audioReady = false;
+
+  function sizeViz(){
+    const rect = vizCanvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    vizCanvas.width = rect.width*dpr; vizCanvas.height = rect.height*dpr;
+    vizCtx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', sizeViz);
+  sizeViz();
+
+  if(SONG_SRC){
+    scoreAudio.src = SONG_SRC;
+    audioStatus.textContent = "Ready — press play.";
+  } else {
+    audioStatus.textContent = "No track loaded yet — the visualizer is idling.";
+  }
+
+  function fmt(t){
+    if(!isFinite(t)) return '0:00';
+    const m = Math.floor(t/60), s = Math.floor(t%60).toString().padStart(2,'0');
+    return m+':'+s;
+  }
+
+  function ensureAudioGraph(){
+    if(audioReady) return;
+    try{
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      sourceNode = audioCtx.createMediaElementSource(scoreAudio);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      sourceNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      audioReady = true;
+    }catch(e){ /* graph already exists or unsupported */ }
+  }
+
+  audioPlayBtn.addEventListener('click', () => {
+    if(!SONG_SRC){
+      audioStatus.textContent = "Add SONG_SRC in the script to enable playback.";
+      return;
+    }
+    ensureAudioGraph();
+    if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    if(scoreAudio.paused){
+      scoreAudio.play().catch(()=>{ audioStatus.textContent = "Couldn't play that file — check the path in SONG_SRC."; });
+      audioPlayBtn.textContent = '❚❚';
+    } else {
+      scoreAudio.pause();
+      audioPlayBtn.textContent = '▶';
+    }
+  });
+  scoreAudio.addEventListener('timeupdate', () => {
+    const pct = (scoreAudio.currentTime/(scoreAudio.duration||1))*100;
+    audioFill.style.width = pct+'%';
+    audioTime.textContent = fmt(scoreAudio.currentTime)+' / '+fmt(scoreAudio.duration);
+  });
+  scoreAudio.addEventListener('playing', () => { audioStatus.textContent = "Now playing."; });
+  audioScrub.addEventListener('click', (e) => {
+    if(!SONG_SRC) return;
+    const rect = audioScrub.getBoundingClientRect();
+    const pct = (e.clientX-rect.left)/rect.width;
+    if(isFinite(scoreAudio.duration)) scoreAudio.currentTime = pct*scoreAudio.duration;
+  });
+
+  let idleT = 0;
+  function drawViz(){
+    requestAnimationFrame(drawViz);
+    const rect = vizCanvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    vizCtx.clearRect(0,0,w,h);
+
+    const playing = !scoreAudio.paused && audioReady && analyser;
+    if(playing){
+      analyser.getByteFrequencyData(dataArray);
+      const barW = w / dataArray.length * 2.4;
+      let x = 0;
+      for(let i=0;i<dataArray.length/2;i++){
+        const barH = (dataArray[i]/255) * h;
+        vizCtx.fillStyle = i % 2 === 0 ? '#e62429' : '#3b6dff';
+        vizCtx.fillRect(x, h-barH, barW-2, barH);
+        x += barW;
+      }
+    } else {
+      idleT += reduced ? 0 : 0.03;
+      vizCtx.strokeStyle = 'rgba(230,36,41,0.5)';
+      vizCtx.lineWidth = 2;
+      vizCtx.beginPath();
+      for(let x=0;x<=w;x+=4){
+        const y = h/2 + Math.sin(x*0.05+idleT)*(h*0.18)*Math.sin(idleT*0.5);
+        if(x===0) vizCtx.moveTo(x,y); else vizCtx.lineTo(x,y);
+      }
+      vizCtx.stroke();
+    }
+  }
+  drawViz();
+
+  /* ---------- REEL / VIDEO ---------- */
+  const reelVideo = document.getElementById('reelVideo');
+  const videoFallback = document.getElementById('videoFallback');
+  const videoPlayBtn = document.getElementById('videoPlayBtn');
+  const videoScrub = document.getElementById('videoScrub');
+  const videoFill = document.getElementById('videoFill');
+  const videoTime = document.getElementById('videoTime');
+
+  if(VIDEO_SRC){
+    reelVideo.src = VIDEO_SRC;
+    if(VIDEO_POSTER) reelVideo.poster = VIDEO_POSTER;
+    reelVideo.addEventListener('loadeddata', () => { videoFallback.style.display = 'none'; });
+    reelVideo.addEventListener('error', () => {
+      videoFallback.querySelector('p').textContent = "Couldn't load that video — check the path in VIDEO_SRC.";
+      videoFallback.style.display = 'flex';
+    });
+  }
+
+  videoPlayBtn.addEventListener('click', () => {
+    if(!VIDEO_SRC) return;
+    if(reelVideo.paused){ reelVideo.play(); videoPlayBtn.textContent='❚❚'; }
+    else { reelVideo.pause(); videoPlayBtn.textContent='▶'; }
+  });
+  reelVideo.addEventListener('timeupdate', () => {
+    const pct = (reelVideo.currentTime/(reelVideo.duration||1))*100;
+    videoFill.style.width = pct+'%';
+    videoTime.textContent = fmt(reelVideo.currentTime)+' / '+fmt(reelVideo.duration);
+  });
+  videoScrub.addEventListener('click', (e) => {
+    if(!VIDEO_SRC) return;
+    const rect = videoScrub.getBoundingClientRect();
+    const pct = (e.clientX-rect.left)/rect.width;
+    if(isFinite(reelVideo.duration)) reelVideo.currentTime = pct*reelVideo.duration;
+  });
+
+  /* ---------- PHOTO WALL ---------- */
+  const photoGrid = document.getElementById('photoGrid');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxClose = document.getElementById('lightboxClose');
+
+  PHOTOS.forEach((p, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'photo';
+    if(p.src){
+      tile.innerHTML = `<img src="${p.src}" alt="${p.caption || ('Photo '+(i+1))}"><div class="cap">${p.caption || ''}</div>`;
+      const img = tile.querySelector('img');
+      img.addEventListener('error', () => { showMissing(tile, p.caption || p.src); });
+      tile.addEventListener('click', () => {
+        if(!img.complete || img.naturalWidth === 0) return;
+        lightboxImg.src = p.src;
+        lightbox.classList.add('open');
+      });
+    } else {
+      showMissing(tile, p.caption || ('Photo '+(i+1)));
+    }
+    photoGrid.appendChild(tile);
+  });
+  function showMissing(tile, label){
+    tile.classList.add('missing');
+    tile.innerHTML = `<div class="glyph">🖼️</div><span class="name">${label}</span>`;
+  }
+  function closeLightbox(){ lightbox.classList.remove('open'); lightboxImg.src=''; }
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => { if(e.target===lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if(e.key==='Escape') closeLightbox(); });
+
+  /* ---------- SPIDER-SENSE cards ---------- */
+  document.querySelectorAll('.sense-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX-rect.left)/rect.width*100)+'%');
+      card.style.setProperty('--my', ((e.clientY-rect.top)/rect.height*100)+'%');
+    });
+  });
+
+  /* ---------- WEB SHOOTER ---------- */
+  const shooterCanvas = document.getElementById('shooterCanvas');
+  const shooterCtx = shooterCanvas.getContext('2d');
+  let strands = [];
+  let dragging = null;
+
+  function sizeShooter(){
+    const rect = shooterCanvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    shooterCanvas.width = rect.width*dpr; shooterCanvas.height = rect.height*dpr;
+    shooterCtx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', sizeShooter);
+  sizeShooter();
+
+  function getPos(e){
+    const rect = shooterCanvas.getBoundingClientRect();
+    return { x: e.clientX-rect.left, y: e.clientY-rect.top };
+  }
+  shooterCanvas.addEventListener('mousedown', (e) => {
+    dragging = { start: getPos(e), current: getPos(e) };
+  });
+  shooterCanvas.addEventListener('mousemove', (e) => {
+    if(dragging) dragging.current = getPos(e);
+  });
+  window.addEventListener('mouseup', () => {
+    if(dragging){
+      strands.push({ a: dragging.start, b: dragging.current, life: 40 });
+      dragging = null;
+    }
+  });
+  shooterCanvas.addEventListener('touchstart', (e) => {
+    const t = e.touches[0]; const rect = shooterCanvas.getBoundingClientRect();
+    dragging = { start:{x:t.clientX-rect.left,y:t.clientY-rect.top}, current:{x:t.clientX-rect.left,y:t.clientY-rect.top} };
+  }, {passive:true});
+  shooterCanvas.addEventListener('touchmove', (e) => {
+    if(!dragging) return;
+    const t = e.touches[0]; const rect = shooterCanvas.getBoundingClientRect();
+    dragging.current = { x:t.clientX-rect.left, y:t.clientY-rect.top };
+  }, {passive:true});
+  shooterCanvas.addEventListener('touchend', () => {
+    if(dragging){ strands.push({ a: dragging.start, b: dragging.current, life: 40 }); dragging = null; }
+  });
+
+  function drawShooter(){
+    requestAnimationFrame(drawShooter);
+    const rect = shooterCanvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    shooterCtx.clearRect(0,0,w,h);
+
+    shooterCtx.strokeStyle = 'rgba(59,109,255,0.08)';
+    for(let x=0;x<w;x+=30){ shooterCtx.beginPath(); shooterCtx.moveTo(x,0); shooterCtx.lineTo(x,h); shooterCtx.stroke(); }
+    for(let y=0;y<h;y+=30){ shooterCtx.beginPath(); shooterCtx.moveTo(0,y); shooterCtx.lineTo(w,y); shooterCtx.stroke(); }
+
+    if(dragging){
+      shooterCtx.strokeStyle = '#e62429';
+      shooterCtx.lineWidth = 2;
+      shooterCtx.setLineDash([6,4]);
+      shooterCtx.beginPath();
+      shooterCtx.moveTo(dragging.start.x, dragging.start.y);
+      shooterCtx.lineTo(dragging.current.x, dragging.current.y);
+      shooterCtx.stroke();
+      shooterCtx.setLineDash([]);
+      dot(dragging.start, '#ffd23f');
+    }
+
+    strands = strands.filter(s => s.life > 0);
+    for(const s of strands){
+      const alpha = Math.min(1, s.life/40);
+      shooterCtx.strokeStyle = `rgba(242,237,227,${alpha})`;
+      shooterCtx.lineWidth = 2;
+      shooterCtx.beginPath();
+      shooterCtx.moveTo(s.a.x, s.a.y);
+      shooterCtx.lineTo(s.b.x, s.b.y);
+      shooterCtx.stroke();
+      dot(s.a, `rgba(230,36,41,${alpha})`);
+      dot(s.b, `rgba(230,36,41,${alpha})`);
+      s.life -= reduced ? 40 : 1;
+    }
+    function dot(p, color){
+      shooterCtx.beginPath();
+      shooterCtx.fillStyle = color;
+      shooterCtx.arc(p.x,p.y,4,0,Math.PI*2);
+      shooterCtx.fill();
+    }
+  }
+  drawShooter();
+
+})();
+</script>
+</body>
+</html>
